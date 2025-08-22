@@ -1,93 +1,69 @@
-import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+import streamlit as st
 from sklearn.preprocessing import LabelEncoder
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.cluster import KMeans
 
-st.title("Crime Data Analysis App")
+st.set_page_config(layout="wide")
+df = pd.read_csv("crime_data.csv")
 
-uploaded_file = st.file_uploader("Upload Crime Dataset (CSV)", type="csv")
+le = LabelEncoder()
+encoded_df = df.copy()
+for col in ['City','Crime_Type','Weapon','Victim_Gender','Suspect_Gender','Arrest_Made']:
+    encoded_df[col] = le.fit_transform(encoded_df[col])
 
-if uploaded_file:
-    df = pd.read_csv(uploaded_file)
+st.title("Crime Data Dashboard")
 
-    st.sidebar.header("Filters")
-    city_filter = st.sidebar.multiselect("Select City", options=df["City"].unique(), default=df["City"].unique())
-    crime_filter = st.sidebar.multiselect("Select Crime Type", options=df["Crime_Type"].unique(), default=df["Crime_Type"].unique())
-    weapon_filter = st.sidebar.multiselect("Select Weapon", options=df["Weapon"].unique(), default=df["Weapon"].unique())
+city = st.selectbox("Select City", ["All"] + sorted(df["City"].unique().tolist()))
+crime_type = st.selectbox("Select Crime Type", ["All"] + sorted(df["Crime_Type"].unique().tolist()))
 
-    df = df[df["City"].isin(city_filter) & df["Crime_Type"].isin(crime_filter) & df["Weapon"].isin(weapon_filter)]
+filtered_df = df.copy()
+if city != "All":
+    filtered_df = filtered_df[filtered_df["City"] == city]
+if crime_type != "All":
+    filtered_df = filtered_df[filtered_df["Crime_Type"] == crime_type]
 
-    st.subheader("Dataset Preview")
-    st.write(df.head())
+st.subheader("Filtered Crime Data")
+st.dataframe(filtered_df)
 
-    st.subheader("Crime Count by City")
-    if not df.empty:
-        plt.figure(figsize=(8, 5))
-        sns.countplot(data=df, x="City", palette="pastel")
-        st.pyplot(plt.gcf())
+st.subheader("Crimes Per City")
+city_counts = df["City"].value_counts().reset_index()
+city_counts.columns = ["City","Count"]
+fig, ax = plt.subplots()
+sns.barplot(x="City", y="Count", data=city_counts, palette="pastel", ax=ax)
+st.pyplot(fig)
 
-    st.subheader("Crime Type Distribution")
-    if not df.empty:
-        plt.figure(figsize=(8, 5))
-        sns.countplot(data=df, x="Crime_Type", palette="pastel")
-        st.pyplot(plt.gcf())
+st.subheader("Crime Type Distribution")
+fig, ax = plt.subplots()
+sns.countplot(x="Crime_Type", data=filtered_df, palette="pastel", ax=ax)
+plt.xticks(rotation=45)
+st.pyplot(fig)
 
-    st.subheader("Arrest Made Distribution")
-    if not df.empty:
-        plt.figure(figsize=(5, 4))
-        sns.countplot(data=df, x="Arrest_Made", palette="pastel")
-        st.pyplot(plt.gcf())
+st.subheader("Victim Gender Distribution")
+fig, ax = plt.subplots()
+sns.countplot(x="Victim_Gender", data=filtered_df, palette="pastel", ax=ax)
+st.pyplot(fig)
 
-    st.subheader("Weapon Distribution")
-    if not df.empty:
-        plt.figure(figsize=(7, 5))
-        sns.countplot(data=df, x="Weapon", palette="pastel")
-        st.pyplot(plt.gcf())
+st.subheader("Clustering of Crimes")
+X = encoded_df[['City','Crime_Type','Weapon','Victim_Gender','Suspect_Gender','Arrest_Made']]
+kmeans = KMeans(n_clusters=3, random_state=42)
+encoded_df['Cluster'] = kmeans.fit_predict(X)
 
-    st.subheader("Predict Arrest Made")
-    if "Arrest_Made" in df.columns and not df.empty:
-        df["Arrest_Made"] = df["Arrest_Made"].map({"Yes": 1, "No": 0})
-        df = df.dropna(subset=["Arrest_Made"])
-        if not df.empty:
-            features = df.drop(columns=["Incident_ID", "Date", "Time", "Arrest_Made"], errors="ignore")
-            features = features.fillna("Unknown")
-            le = LabelEncoder()
-            for col in features.columns:
-                if features[col].dtype == "object":
-                    features[col] = le.fit_transform(features[col])
-            X = features
-            y = df["Arrest_Made"]
-            if len(y.unique()) > 1:
-                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
-                model = LogisticRegression(max_iter=1000)
-                model.fit(X_train, y_train)
-                y_pred = model.predict(X_test)
-                acc = accuracy_score(y_test, y_pred)
-                st.write(f"Model Accuracy: {acc:.2f}")
-                cm = confusion_matrix(y_test, y_pred, labels=[0, 1])
-                plt.figure(figsize=(5, 4))
-                sns.heatmap(cm, annot=True, fmt="d", cmap="Pastel1", xticklabels=["No", "Yes"], yticklabels=["No", "Yes"])
-                st.pyplot(plt.gcf())
-            else:
-                st.write("Not enough class variety for training.")
+clustered_df = df.copy()
+clustered_df['Cluster'] = encoded_df['Cluster']
 
-    st.subheader("Clustering Crime Data")
-    features = df.drop(columns=["Incident_ID", "Date", "Time", "Arrest_Made"], errors="ignore")
-    features = features.fillna("Unknown")
-    le = LabelEncoder()
-    for col in features.columns:
-        if features[col].dtype == "object":
-            features[col] = le.fit_transform(features[col])
-    if len(features) > 1:
-        kmeans = KMeans(n_clusters=3, random_state=42, n_init=10)
-        df["Cluster"] = kmeans.fit_predict(features)
-        plt.figure(figsize=(8, 5))
-        sns.scatterplot(data=df, x="Cluster", y=features.columns[0], hue="Cluster", palette="pastel")
-        st.pyplot(plt.gcf())
-        st.write(df[["Incident_ID", "Cluster"]].head())
+st.dataframe(clustered_df[['Incident_ID','City','Crime_Type','Cluster']])
+
+fig, ax = plt.subplots()
+sns.scatterplot(
+    data=clustered_df,
+    x="City",
+    y="Crime_Type",
+    hue="Cluster",
+    palette="pastel",
+    ax=ax
+)
+plt.xticks(rotation=45)
+st.pyplot(fig)
