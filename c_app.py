@@ -10,8 +10,7 @@ from matplotlib import rcParams
 st.set_page_config(page_title="CrimeVision", layout="wide")
 st.title("CrimeVision")
 
-# Set the path of your CSV file here
-csv_file_path = "Crime_dataset.csv"
+csv_file_path = "Crime_data.csv"
 
 df = pd.read_csv(csv_file_path)
 
@@ -119,3 +118,4 @@ if 'Date' in df.columns:
         col1, col2, col3 = st.columns([1,2,1])
         with col2:
             st.pyplot(fig, use_container_width=False)
+
