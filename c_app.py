@@ -3,14 +3,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
 from sklearn.preprocessing import LabelEncoder
-from sklearn.cluster import KMeans
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib import rcParams
 
 st.set_page_config(page_title="CrimeVision", layout="wide")
 st.title("CrimeVision")
 
-csv_file_path = "Crime_data.csv"
+csv_file_path = "Crime_dataset.csv"
 df = pd.read_csv(csv_file_path)
 
 le = LabelEncoder()
@@ -30,14 +29,6 @@ if st.button("Show Analysis"):
 
     st.subheader("Filtered Crime Data")
     st.dataframe(filtered_df)
-
-    st.subheader("Clustering of Crimes")
-    X = encoded_df[['City','Crime_Type','Weapon','Victim_Gender','Suspect_Gender','Arrest_Made']]
-    kmeans = KMeans(n_clusters=3, random_state=42)
-    encoded_df['Cluster'] = kmeans.fit_predict(X)
-    clustered_df = df.copy()
-    clustered_df['Cluster'] = encoded_df['Cluster']
-    st.dataframe(clustered_df[['Incident_ID','City','Crime_Type','Cluster']])
 
     line_colors = ['#FF6699', '#3399FF', '#9966FF', '#FFB366', '#66FFB3', '#B366FF']
     rcParams['font.family'] = 'Comic Sans MS'
@@ -118,4 +109,3 @@ if st.button("Show Analysis"):
             col1, col2, col3 = st.columns([1,2,1])
             with col2:
                 st.pyplot(fig, use_container_width=False)
-
