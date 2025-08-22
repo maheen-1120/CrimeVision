@@ -9,7 +9,7 @@ from matplotlib import rcParams
 st.set_page_config(page_title="CrimeVision", layout="wide")
 st.title("CrimeVision")
 
-csv_file_path = "Crime_dataset.csv"
+csv_file_path = "Crime_data.csv"
 df = pd.read_csv(csv_file_path)
 
 le = LabelEncoder()
@@ -109,3 +109,4 @@ if st.button("Show Analysis"):
             col1, col2, col3 = st.columns([1,2,1])
             with col2:
                 st.pyplot(fig, use_container_width=False)
+
