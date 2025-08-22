@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 import streamlit as st
@@ -34,26 +35,27 @@ encoded_df['Cluster'] = kmeans.fit_predict(X)
 clustered_df = df.copy()
 clustered_df['Cluster'] = encoded_df['Cluster']
 st.dataframe(clustered_df[['Incident_ID','City','Crime_Type','Cluster']])
-fig, ax = plt.subplots(figsize=(4,3))
-sns.scatterplot(data=clustered_df, x="City", y="Crime_Type", hue="Cluster", palette="pastel", ax=ax)
-plt.xticks(rotation=45)
-st.pyplot(fig, use_container_width=False)
 
-st.subheader("Crimes Per City")
+# Make graphs smaller and line plots
+fig, ax = plt.subplots(figsize=(5,3))
 city_counts = df["City"].value_counts().reset_index()
 city_counts.columns = ["City","Count"]
-fig, ax = plt.subplots(figsize=(4,3))
-sns.barplot(x="City", y="Count", data=city_counts, palette="pastel", ax=ax)
+ax.plot(city_counts["City"], city_counts["Count"], marker="o")
+ax.set_title("Crimes Per City")
 plt.xticks(rotation=45)
-st.pyplot(fig, use_container_width=False)
+st.pyplot(fig)
 
-st.subheader("Crime Type Distribution")
-fig, ax = plt.subplots(figsize=(4,3))
-sns.countplot(x="Crime_Type", data=filtered_df, palette="pastel", ax=ax)
+fig, ax = plt.subplots(figsize=(5,3))
+crime_counts = filtered_df["Crime_Type"].value_counts().reset_index()
+crime_counts.columns = ["Crime_Type","Count"]
+ax.plot(crime_counts["Crime_Type"], crime_counts["Count"], marker="o")
+ax.set_title("Crime Type Distribution")
 plt.xticks(rotation=45)
-st.pyplot(fig, use_container_width=False)
+st.pyplot(fig)
 
-st.subheader("Victim Gender Distribution")
-fig, ax = plt.subplots(figsize=(4,3))
-sns.countplot(x="Victim_Gender", data=filtered_df, palette="pastel", ax=ax)
-st.pyplot(fig, use_container_width=False)
+fig, ax = plt.subplots(figsize=(5,3))
+gender_counts = filtered_df["Victim_Gender"].value_counts().reset_index()
+gender_counts.columns = ["Victim_Gender","Count"]
+ax.plot(gender_counts["Victim_Gender"], gender_counts["Count"], marker="o")
+ax.set_title("Victim Gender Distribution")
+st.pyplot(fig)
