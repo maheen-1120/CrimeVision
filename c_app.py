@@ -23,6 +23,8 @@ crime_type = st.selectbox("Select Crime Type", ["All"] + sorted(df["Crime_Type"]
 filtered_df = df.copy()
 if city != "All":
     filtered_df = filtered_df[filtered_df["City"] == city]
+if crime_type != "All":
+    filtered_df = filtered_df[filtered_df["Crime_Type"] == crime_type]
 
 st.subheader("Filtered Crime Data")
 st.dataframe(filtered_df)
@@ -40,14 +42,14 @@ blue_shades = ['#3399FF', '#66B2FF', '#99CCFF']
 purple_shades = ['#9966FF', '#B399FF', '#CFA3FF']
 line_colors = ['#FF6699', '#3399FF', '#9966FF', '#FFB366', '#66FFB3', '#B366FF']
 
-rcParams['font.family'] = 'Verdana'
+rcParams['font.family'] = 'Comic Sans MS'
 
 def plot_in_middle(fig):
     col1, col2, col3 = st.columns([1,2,1])
     with col2:
         st.pyplot(fig, use_container_width=False)
 
-city_counts = df['City'].value_counts()
+city_counts = filtered_df['City'].value_counts()
 fig, ax = plt.subplots(figsize=(12,7), dpi=300)
 for i, city_name in enumerate(city_counts.index):
     ax.scatter(city_name, city_counts[city_name], color=line_colors[i % len(line_colors)], s=200, label=city_name)
@@ -57,12 +59,12 @@ ax.set_xlabel("City", fontsize=18, fontweight='bold')
 ax.set_ylabel("Count", fontsize=18, fontweight='bold')
 plt.xticks(rotation=45, fontsize=16, fontweight='bold')
 plt.yticks(fontsize=16, fontweight='bold')
-ax.legend(fontsize=12)
+ax.legend(fontsize=12, prop={'family':'Comic Sans MS','weight':'bold'})
 plt.tight_layout()
 plot_in_middle(fig)
 st.markdown("<br>", unsafe_allow_html=True)
 
-crime_counts = df['Crime_Type'].value_counts()
+crime_counts = filtered_df['Crime_Type'].value_counts()
 fig, ax = plt.subplots(figsize=(12,7), dpi=300)
 for i, crime_name in enumerate(crime_counts.index):
     ax.scatter(crime_name, crime_counts[crime_name], color=line_colors[i % len(line_colors)], s=200, label=crime_name)
@@ -72,7 +74,7 @@ ax.set_xlabel("Crime Type", fontsize=18, fontweight='bold')
 ax.set_ylabel("Count", fontsize=18, fontweight='bold')
 plt.xticks(rotation=45, fontsize=16, fontweight='bold')
 plt.yticks(fontsize=16, fontweight='bold')
-ax.legend(fontsize=12)
+ax.legend(fontsize=12, prop={'family':'Comic Sans MS','weight':'bold'})
 plt.tight_layout()
 plot_in_middle(fig)
 st.markdown("<br>", unsafe_allow_html=True)
@@ -88,7 +90,7 @@ ax.set_ylabel("Count", fontsize=18, fontweight='bold')
 plt.xticks(rotation=0, fontsize=16, fontweight='bold')
 plt.yticks(fontsize=16, fontweight='bold')
 plt.ylim(0, max(df_gender.max())*1.1)
-plt.legend(fontsize=12, loc='upper right')
+plt.legend(fontsize=12, prop={'family':'Comic Sans MS','weight':'bold'}, loc='upper right')
 plt.tight_layout()
 plot_in_middle(fig)
 st.markdown("<br>", unsafe_allow_html=True)
@@ -97,12 +99,12 @@ if 'Date' in df.columns:
     df['Date'] = pd.to_datetime(df['Date'], format='%d-%m-%Y', errors='coerce')
     df['Year'] = df['Date'].dt.year
     df['Month'] = df['Date'].dt.month
-    heat_data = df.groupby(['Month', 'Year']).size().unstack(fill_value=0)
+    heat_data = filtered_df.groupby(['Month', 'Year']).size().unstack(fill_value=0)
     month_labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
     fig, ax = plt.subplots(figsize=(12,8), dpi=300)
-    cmap = LinearSegmentedColormap.from_list("custom_heat", ["#E0F7FA", "#80DEEA", "#00ACC1"])  
+    cmap = LinearSegmentedColormap.from_list("custom_heat", ["#FFF0F5", "#FFB6C1", "#FF69B4"])  
     sns.heatmap(heat_data, annot=True, fmt="d", cmap=cmap,
-                annot_kws={'weight':'bold', 'fontsize':12},
+                annot_kws={'weight':'bold', 'fontsize':13, 'fontfamily':'Comic Sans MS'},
                 cbar_kws={'label': 'Crime Count', 'shrink':0.7}, ax=ax)
     ax.set_title("Crime Counts Heatmap (Month vs Year)", fontsize=22, fontweight='bold')
     ax.set_xlabel("Year", fontsize=18, fontweight='bold')
