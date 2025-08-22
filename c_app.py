@@ -23,8 +23,6 @@ crime_type = st.selectbox("Select Crime Type", ["All"] + sorted(df["Crime_Type"]
 filtered_df = df.copy()
 if city != "All":
     filtered_df = filtered_df[filtered_df["City"] == city]
-if crime_type != "All":
-    filtered_df = filtered_df[filtered_df["Crime_Type"] == crime_type]
 
 st.subheader("Filtered Crime Data")
 st.dataframe(filtered_df)
@@ -42,7 +40,7 @@ blue_shades = ['#3399FF', '#66B2FF', '#99CCFF']
 purple_shades = ['#9966FF', '#B399FF', '#CFA3FF']
 line_colors = ['#FF6699', '#3399FF', '#9966FF', '#FFB366', '#66FFB3', '#B366FF']
 
-rcParams['font.family'] = 'DejaVu Sans'
+rcParams['font.family'] = 'Verdana'
 
 def plot_in_middle(fig):
     col1, col2, col3 = st.columns([1,2,1])
@@ -50,30 +48,30 @@ def plot_in_middle(fig):
         st.pyplot(fig, use_container_width=False)
 
 city_counts = df['City'].value_counts()
-fig, ax = plt.subplots(figsize=(12,7), dpi=180)
+fig, ax = plt.subplots(figsize=(12,7), dpi=300)
 for i, city_name in enumerate(city_counts.index):
-    ax.scatter(city_name, city_counts[city_name], color=line_colors[i % len(line_colors)], s=150, label=city_name)
-ax.plot(city_counts.index, city_counts.values, color='grey', linewidth=2, alpha=0.5)
-ax.set_title("Crimes Per City", fontsize=20, fontweight='bold')
-ax.set_xlabel("City", fontsize=16, fontweight='bold')
-ax.set_ylabel("Count", fontsize=16, fontweight='bold')
-plt.xticks(rotation=45, fontsize=14, fontweight='bold')
-plt.yticks(fontsize=14, fontweight='bold')
+    ax.scatter(city_name, city_counts[city_name], color=line_colors[i % len(line_colors)], s=200, label=city_name)
+ax.plot(city_counts.index, city_counts.values, color='grey', linewidth=3, alpha=0.7)
+ax.set_title("Crimes Per City", fontsize=22, fontweight='bold')
+ax.set_xlabel("City", fontsize=18, fontweight='bold')
+ax.set_ylabel("Count", fontsize=18, fontweight='bold')
+plt.xticks(rotation=45, fontsize=16, fontweight='bold')
+plt.yticks(fontsize=16, fontweight='bold')
 ax.legend(fontsize=12)
 plt.tight_layout()
 plot_in_middle(fig)
 st.markdown("<br>", unsafe_allow_html=True)
 
-crime_counts = filtered_df['Crime_Type'].value_counts()
-fig, ax = plt.subplots(figsize=(12,7), dpi=180)
+crime_counts = df['Crime_Type'].value_counts()
+fig, ax = plt.subplots(figsize=(12,7), dpi=300)
 for i, crime_name in enumerate(crime_counts.index):
-    ax.scatter(crime_name, crime_counts[crime_name], color=line_colors[i % len(line_colors)], s=150, label=crime_name)
-ax.plot(crime_counts.index, crime_counts.values, color='grey', linewidth=2, alpha=0.5)
-ax.set_title("Crime Type Distribution", fontsize=20, fontweight='bold')
-ax.set_xlabel("Crime Type", fontsize=16, fontweight='bold')
-ax.set_ylabel("Count", fontsize=16, fontweight='bold')
-plt.xticks(rotation=45, fontsize=14, fontweight='bold')
-plt.yticks(fontsize=14, fontweight='bold')
+    ax.scatter(crime_name, crime_counts[crime_name], color=line_colors[i % len(line_colors)], s=200, label=crime_name)
+ax.plot(crime_counts.index, crime_counts.values, color='grey', linewidth=3, alpha=0.7)
+ax.set_title("Crime Type Distribution", fontsize=22, fontweight='bold')
+ax.set_xlabel("Crime Type", fontsize=18, fontweight='bold')
+ax.set_ylabel("Count", fontsize=18, fontweight='bold')
+plt.xticks(rotation=45, fontsize=16, fontweight='bold')
+plt.yticks(fontsize=16, fontweight='bold')
 ax.legend(fontsize=12)
 plt.tight_layout()
 plot_in_middle(fig)
@@ -82,13 +80,13 @@ st.markdown("<br>", unsafe_allow_html=True)
 victim_counts = filtered_df['Victim_Gender'].value_counts()
 suspect_counts = filtered_df['Suspect_Gender'].value_counts()
 df_gender = pd.DataFrame({'Victim': victim_counts, 'Suspect': suspect_counts}).fillna(0)
-fig, ax = plt.subplots(figsize=(12,6), dpi=180)
+fig, ax = plt.subplots(figsize=(12,6), dpi=300)
 df_gender.plot(kind='bar', ax=ax, color=['#FF6699', '#9966FF'], width=0.5, edgecolor='black')
-ax.set_title("Victim vs Suspect Gender", fontsize=20, fontweight='bold')
-ax.set_xlabel("Gender", fontsize=16, fontweight='bold')
-ax.set_ylabel("Count", fontsize=16, fontweight='bold')
-plt.xticks(rotation=0, fontsize=14, fontweight='bold')
-plt.yticks(fontsize=14, fontweight='bold')
+ax.set_title("Victim vs Suspect Gender", fontsize=22, fontweight='bold')
+ax.set_xlabel("Gender", fontsize=18, fontweight='bold')
+ax.set_ylabel("Count", fontsize=18, fontweight='bold')
+plt.xticks(rotation=0, fontsize=16, fontweight='bold')
+plt.yticks(fontsize=16, fontweight='bold')
 plt.ylim(0, max(df_gender.max())*1.1)
 plt.legend(fontsize=12, loc='upper right')
 plt.tight_layout()
@@ -101,15 +99,15 @@ if 'Date' in df.columns:
     df['Month'] = df['Date'].dt.month
     heat_data = df.groupby(['Month', 'Year']).size().unstack(fill_value=0)
     month_labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-    fig, ax = plt.subplots(figsize=(12,8), dpi=180)
+    fig, ax = plt.subplots(figsize=(12,8), dpi=300)
     cmap = LinearSegmentedColormap.from_list("custom_heat", ["#E0F7FA", "#80DEEA", "#00ACC1"])  
     sns.heatmap(heat_data, annot=True, fmt="d", cmap=cmap,
                 cbar_kws={'label': 'Crime Count', 'shrink':0.7}, ax=ax)
-    ax.set_title("Crime Counts Heatmap (Month vs Year)", fontsize=20, fontweight='bold')
-    ax.set_xlabel("Year", fontsize=16, fontweight='bold')
-    ax.set_ylabel("Month", fontsize=16, fontweight='bold')
+    ax.set_title("Crime Counts Heatmap (Month vs Year)", fontsize=22, fontweight='bold')
+    ax.set_xlabel("Year", fontsize=18, fontweight='bold')
+    ax.set_ylabel("Month", fontsize=18, fontweight='bold')
     ax.set_yticks(heat_data.index + 0.5)
-    ax.set_yticklabels([month_labels[m-1] for m in heat_data.index], rotation=0, fontsize=12, fontweight='bold')
+    ax.set_yticklabels([month_labels[m-1] for m in heat_data.index], rotation=0, fontsize=14, fontweight='bold')
     plt.tight_layout()
     col1, col2, col3 = st.columns([1,2,1])
     with col2:
