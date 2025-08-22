@@ -7,7 +7,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.cluster import KMeans
 
 st.set_page_config(layout="wide")
-df = pd.read_csv("crime_data.csv")
+df = pd.read_csv("Crime_dataset.csv")
 
 le = LabelEncoder()
 encoded_df = df.copy()
@@ -68,3 +68,4 @@ sns.scatterplot(
 )
 plt.xticks(rotation=45)
 st.pyplot(fig)
+
