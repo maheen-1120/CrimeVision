@@ -36,26 +36,27 @@ clustered_df = df.copy()
 clustered_df['Cluster'] = encoded_df['Cluster']
 st.dataframe(clustered_df[['Incident_ID','City','Crime_Type','Cluster']])
 
-# Make graphs smaller and line plots
-fig, ax = plt.subplots(figsize=(5,3))
-city_counts = df["City"].value_counts().reset_index()
-city_counts.columns = ["City","Count"]
-ax.plot(city_counts["City"], city_counts["Count"], marker="o")
+st.subheader("Crime Data Visualizations")
+
+fig, ax = plt.subplots(figsize=(6,3))
+city_counts = df['City'].value_counts()
+ax.plot(city_counts.index, city_counts.values, marker='o')
 ax.set_title("Crimes Per City")
 plt.xticks(rotation=45)
+plt.tight_layout()
 st.pyplot(fig)
 
-fig, ax = plt.subplots(figsize=(5,3))
-crime_counts = filtered_df["Crime_Type"].value_counts().reset_index()
-crime_counts.columns = ["Crime_Type","Count"]
-ax.plot(crime_counts["Crime_Type"], crime_counts["Count"], marker="o")
+fig, ax = plt.subplots(figsize=(6,3))
+crime_counts = filtered_df['Crime_Type'].value_counts()
+ax.plot(crime_counts.index, crime_counts.values, marker='o')
 ax.set_title("Crime Type Distribution")
 plt.xticks(rotation=45)
+plt.tight_layout()
 st.pyplot(fig)
 
-fig, ax = plt.subplots(figsize=(5,3))
-gender_counts = filtered_df["Victim_Gender"].value_counts().reset_index()
-gender_counts.columns = ["Victim_Gender","Count"]
-ax.plot(gender_counts["Victim_Gender"], gender_counts["Count"], marker="o")
+fig, ax = plt.subplots(figsize=(6,3))
+gender_counts = filtered_df['Victim_Gender'].value_counts()
+ax.plot(gender_counts.index, gender_counts.values, marker='o')
 ax.set_title("Victim Gender Distribution")
+plt.tight_layout()
 st.pyplot(fig)
