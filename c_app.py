@@ -36,9 +36,10 @@ clustered_df = df.copy()
 clustered_df['Cluster'] = encoded_df['Cluster']
 st.dataframe(clustered_df[['Incident_ID','City','Crime_Type','Cluster']])
 
-pink_shades = ['#FF99AA', '#FFB3C6', '#FFCCE5']
-blue_shades = ['#99CCFF', '#66B2FF', '#3399FF']
-purple_shades = ['#CFA3FF', '#B399FF', '#A366FF']
+pink_shades = ['#FF6699', '#FF99AA', '#FFB3C6']
+blue_shades = ['#3399FF', '#66B2FF', '#99CCFF']
+purple_shades = ['#9966FF', '#B399FF', '#CFA3FF']
+line_colors = ['#FF6699', '#3399FF', '#9966FF', '#FFB366', '#66FFB3', '#B366FF']
 
 def plot_in_middle(fig):
     col1, col2, col3 = st.columns([1,2,1])
@@ -46,21 +47,25 @@ def plot_in_middle(fig):
         st.pyplot(fig, use_container_width=False)
 
 city_counts = df['City'].value_counts()
-fig, ax = plt.subplots(figsize=(6,4), dpi=160)
-ax.plot(city_counts.index, city_counts.values, marker='o', markersize=6, color=pink_shades[0], linewidth=2)
-ax.set_title("Crimes Per City", fontsize=12)
+fig, ax = plt.subplots(figsize=(7,5), dpi=180)
+for i, city_name in enumerate(city_counts.index):
+    ax.plot(city_name, city_counts[city_name], marker='o', markersize=8, color=line_colors[i % len(line_colors)], linewidth=2, label=city_name)
+ax.set_title("Crimes Per City", fontsize=13)
 plt.xticks(rotation=45, fontsize=10)
 plt.yticks(fontsize=10)
+ax.legend(fontsize=9)
 plt.tight_layout()
 plot_in_middle(fig)
 st.markdown("<br>", unsafe_allow_html=True)
 
 crime_counts = filtered_df['Crime_Type'].value_counts()
-fig, ax = plt.subplots(figsize=(6,4), dpi=160)
-ax.plot(crime_counts.index, crime_counts.values, marker='o', markersize=6, color=blue_shades[0], linewidth=2)
-ax.set_title("Crime Type Distribution", fontsize=12)
+fig, ax = plt.subplots(figsize=(7,5), dpi=180)
+for i, crime_name in enumerate(crime_counts.index):
+    ax.plot(crime_name, crime_counts[crime_name], marker='o', markersize=8, color=line_colors[i % len(line_colors)], linewidth=2, label=crime_name)
+ax.set_title("Crime Type Distribution", fontsize=13)
 plt.xticks(rotation=45, fontsize=10)
 plt.yticks(fontsize=10)
+ax.legend(fontsize=9)
 plt.tight_layout()
 plot_in_middle(fig)
 st.markdown("<br>", unsafe_allow_html=True)
@@ -68,13 +73,13 @@ st.markdown("<br>", unsafe_allow_html=True)
 victim_counts = filtered_df['Victim_Gender'].value_counts()
 suspect_counts = filtered_df['Suspect_Gender'].value_counts()
 df_gender = pd.DataFrame({'Victim': victim_counts, 'Suspect': suspect_counts}).fillna(0)
-fig, ax = plt.subplots(figsize=(6,3.5), dpi=160)
-df_gender.plot(kind='bar', ax=ax, color=['#FF99AA', '#CFA3FF'], width=0.5, edgecolor='black')
-ax.set_title("Victim vs Suspect Gender", fontsize=12)
-plt.xticks(rotation=0, fontsize=9)
-plt.yticks(fontsize=9)
+fig, ax = plt.subplots(figsize=(7,4), dpi=180)
+df_gender.plot(kind='bar', ax=ax, color=['#FF6699', '#9966FF'], width=0.5, edgecolor='black')
+ax.set_title("Victim vs Suspect Gender", fontsize=13)
+plt.xticks(rotation=0, fontsize=10)
+plt.yticks(fontsize=10)
 plt.ylim(0, max(df_gender.max())*1.1)
-plt.legend(fontsize=9, loc='upper right')
+plt.legend(fontsize=10, loc='upper right')
 plt.tight_layout()
 plot_in_middle(fig)
 st.markdown("<br>", unsafe_allow_html=True)
@@ -85,13 +90,13 @@ if 'Date' in df.columns:
     df['Month'] = df['Date'].dt.month
     heat_data = df.groupby(['Month', 'Year']).size().unstack(fill_value=0)
     month_labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-    fig, ax = plt.subplots(figsize=(7,6), dpi=160)
-    cmap = LinearSegmentedColormap.from_list("custom_pastel", ["#FFFFFF", "#FFB3C6", "#FF4D6D"])  
+    fig, ax = plt.subplots(figsize=(8,6), dpi=180)
+    cmap = LinearSegmentedColormap.from_list("custom_heat", ["#E0F7FA", "#80DEEA", "#00ACC1"])  
     sns.heatmap(heat_data, annot=True, fmt="d", cmap=cmap,
                 cbar_kws={'label': 'Crime Count', 'shrink':0.7}, ax=ax)
-    ax.set_title("Crime Counts Heatmap (Month vs Year)", fontsize=13)
-    ax.set_xlabel("Year", fontsize=11)
-    ax.set_ylabel("Month", fontsize=11)
+    ax.set_title("Crime Counts Heatmap (Month vs Year)", fontsize=14)
+    ax.set_xlabel("Year", fontsize=12)
+    ax.set_ylabel("Month", fontsize=12)
     ax.set_yticks(heat_data.index + 0.5)
     ax.set_yticklabels([month_labels[m-1] for m in heat_data.index], rotation=0, fontsize=10)
     plt.tight_layout()
