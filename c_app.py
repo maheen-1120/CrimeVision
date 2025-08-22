@@ -11,6 +11,8 @@ df = pd.read_csv("Crime_dataset.csv")
 
 df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
 df['Time'] = pd.to_datetime(df['Time'], format='%H:%M:%S', errors='coerce').dt.time
+df['Year'] = df['Date'].dt.year
+df['Month'] = df['Date'].dt.month
 
 le = LabelEncoder()
 encoded_df = df.copy()
@@ -21,12 +23,18 @@ st.title("Crime Data Dashboard")
 
 city = st.selectbox("Select City", ["All"] + sorted(df["City"].unique().tolist()))
 crime_type = st.selectbox("Select Crime Type", ["All"] + sorted(df["Crime_Type"].unique().tolist()))
+year_filter = st.selectbox("Select Year", ["All"] + sorted(df["Year"].dropna().unique().astype(int).tolist()))
+month_filter = st.selectbox("Select Month", ["All"] + list(range(1,13)))
 
 filtered_df = df.copy()
 if city != "All":
     filtered_df = filtered_df[filtered_df["City"] == city]
 if crime_type != "All":
     filtered_df = filtered_df[filtered_df["Crime_Type"] == crime_type]
+if year_filter != "All":
+    filtered_df = filtered_df[filtered_df["Year"] == year_filter]
+if month_filter != "All":
+    filtered_df = filtered_df[filtered_df["Month"] == month_filter]
 
 st.subheader("Filtered Crime Data")
 st.dataframe(filtered_df)
@@ -82,3 +90,4 @@ if not filtered_df.empty:
 st.subheader("Date and Time Information")
 st.write("Date Range:", filtered_df['Date'].min(), "to", filtered_df['Date'].max())
 st.write(filtered_df[['Date','Time']])
+
