@@ -51,29 +51,28 @@ st.dataframe(clustered_df[['Incident_ID','City','Crime_Type','Cluster']])
 
 st.subheader("Crime Data Visualizations")
 
+city_counts = df['City'].value_counts()
 fig, ax = plt.subplots(figsize=(4,2.5))
-sns.lineplot(x=city_counts := df['City'].value_counts().index,
-             y=city_counts_values := df['City'].value_counts().values,
-             marker='o', ax=ax, color='teal')
+sns.lineplot(x=city_counts.index, y=city_counts.values, marker='o', ax=ax, color='teal')
 ax.set_title("Crimes Per City", fontsize=10)
 plt.xticks(rotation=45, fontsize=8)
 plt.yticks(fontsize=8)
 plt.tight_layout()
 st.pyplot(fig)
 
+crime_counts = filtered_df['Crime_Type'].value_counts()
 fig, ax = plt.subplots(figsize=(4,2.5))
-sns.lineplot(x=crime_counts.index, y=crime_counts.values := filtered_df['Crime_Type'].value_counts().values,
-             marker='o', ax=ax, color='orange')
+sns.lineplot(x=crime_counts.index, y=crime_counts.values, marker='o', ax=ax, color='orange')
 ax.set_title("Crime Type Distribution", fontsize=10)
 plt.xticks(rotation=45, fontsize=8)
 plt.yticks(fontsize=8)
 plt.tight_layout()
 st.pyplot(fig)
 
-fig, ax = plt.subplots(figsize=(4,2.5))
 victim_counts = filtered_df['Victim_Gender'].value_counts()
 suspect_counts = filtered_df['Suspect_Gender'].value_counts()
 df_gender = pd.DataFrame({'Victim': victim_counts, 'Suspect': suspect_counts}).fillna(0)
+fig, ax = plt.subplots(figsize=(4,2.5))
 df_gender.plot(kind='bar', ax=ax, color=['#FF6F61', '#6B5B95'], width=0.6)
 ax.set_title("Victim vs Suspect Gender Distribution", fontsize=10)
 plt.xticks(rotation=0, fontsize=8)
