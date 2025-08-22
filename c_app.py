@@ -7,8 +7,7 @@ from sklearn.cluster import KMeans
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib import rcParams
 
-st.set_page_config(page_title="CrimeVision", layout="wide")
-
+st.set_page_config(layout="wide")
 df = pd.read_csv("Crime_dataset.csv")
 
 le = LabelEncoder()
@@ -16,7 +15,7 @@ encoded_df = df.copy()
 for col in ['City','Crime_Type','Weapon','Victim_Gender','Suspect_Gender','Arrest_Made']:
     encoded_df[col] = le.fit_transform(encoded_df[col])
 
-st.title("CrimeVision")
+st.title("Crime Data Dashboard")
 
 city = st.selectbox("Select City", ["All"] + sorted(df["City"].unique()))
 crime_type = st.selectbox("Select Crime Type", ["All"] + sorted(df["Crime_Type"].unique()))
