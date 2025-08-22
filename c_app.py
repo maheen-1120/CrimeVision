@@ -102,6 +102,7 @@ if 'Date' in df.columns:
     fig, ax = plt.subplots(figsize=(12,8), dpi=300)
     cmap = LinearSegmentedColormap.from_list("custom_heat", ["#E0F7FA", "#80DEEA", "#00ACC1"])  
     sns.heatmap(heat_data, annot=True, fmt="d", cmap=cmap,
+                annot_kws={'weight':'bold', 'fontsize':12},
                 cbar_kws={'label': 'Crime Count', 'shrink':0.7}, ax=ax)
     ax.set_title("Crime Counts Heatmap (Month vs Year)", fontsize=22, fontweight='bold')
     ax.set_xlabel("Year", fontsize=18, fontweight='bold')
