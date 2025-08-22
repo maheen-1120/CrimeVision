@@ -47,25 +47,23 @@ def plot_in_middle(fig):
         st.pyplot(fig, use_container_width=False)
 
 city_counts = df['City'].value_counts()
-fig, ax = plt.subplots(figsize=(7,5), dpi=180)
-for i, city_name in enumerate(city_counts.index):
-    ax.plot(city_name, city_counts[city_name], marker='o', markersize=8, color=line_colors[i % len(line_colors)], linewidth=2, label=city_name)
-ax.set_title("Crimes Per City", fontsize=13)
-plt.xticks(rotation=45, fontsize=10)
-plt.yticks(fontsize=10)
-ax.legend(fontsize=9)
+fig, ax = plt.subplots(figsize=(8,5), dpi=180)
+ax.plot(city_counts.index, city_counts.values, color=pink_shades[0], linewidth=2)
+ax.scatter(city_counts.index, city_counts.values, color=pink_shades[0], s=80)
+ax.set_title("Crimes Per City", fontsize=14)
+plt.xticks(rotation=45, fontsize=11)
+plt.yticks(fontsize=11)
 plt.tight_layout()
 plot_in_middle(fig)
 st.markdown("<br>", unsafe_allow_html=True)
 
 crime_counts = filtered_df['Crime_Type'].value_counts()
-fig, ax = plt.subplots(figsize=(7,5), dpi=180)
-for i, crime_name in enumerate(crime_counts.index):
-    ax.plot(crime_name, crime_counts[crime_name], marker='o', markersize=8, color=line_colors[i % len(line_colors)], linewidth=2, label=crime_name)
-ax.set_title("Crime Type Distribution", fontsize=13)
-plt.xticks(rotation=45, fontsize=10)
-plt.yticks(fontsize=10)
-ax.legend(fontsize=9)
+fig, ax = plt.subplots(figsize=(8,5), dpi=180)
+ax.plot(crime_counts.index, crime_counts.values, color=blue_shades[0], linewidth=2)
+ax.scatter(crime_counts.index, crime_counts.values, color=blue_shades[0], s=80)
+ax.set_title("Crime Type Distribution", fontsize=14)
+plt.xticks(rotation=45, fontsize=11)
+plt.yticks(fontsize=11)
 plt.tight_layout()
 plot_in_middle(fig)
 st.markdown("<br>", unsafe_allow_html=True)
@@ -90,7 +88,7 @@ if 'Date' in df.columns:
     df['Month'] = df['Date'].dt.month
     heat_data = df.groupby(['Month', 'Year']).size().unstack(fill_value=0)
     month_labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-    fig, ax = plt.subplots(figsize=(8,6), dpi=180)
+    fig, ax = plt.subplots(figsize=(9,6), dpi=180)
     cmap = LinearSegmentedColormap.from_list("custom_heat", ["#E0F7FA", "#80DEEA", "#00ACC1"])  
     sns.heatmap(heat_data, annot=True, fmt="d", cmap=cmap,
                 cbar_kws={'label': 'Crime Count', 'shrink':0.7}, ax=ax)
