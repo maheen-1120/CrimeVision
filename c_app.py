@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 import streamlit as st
 from sklearn.preprocessing import LabelEncoder
 from sklearn.cluster import KMeans
@@ -36,10 +37,10 @@ st.dataframe(clustered_df[['Incident_ID','City','Crime_Type','Cluster']])
 
 pastel_colors = ['#FFB6C1', '#ADD8E6', '#D8BFD8']
 
-def plot_centered(fig):
-    st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
-    st.pyplot(fig, use_container_width=False)
-    st.markdown("</div>", unsafe_allow_html=True)
+def plot_in_middle(fig):
+    col1, col2, col3 = st.columns([1,2,1])
+    with col2:
+        st.pyplot(fig, use_container_width=False)
 
 city_counts = df['City'].value_counts()
 fig, ax = plt.subplots(figsize=(3,2.5), dpi=150)
@@ -48,7 +49,7 @@ ax.set_title("Crimes Per City", fontsize=9)
 plt.xticks(rotation=45, fontsize=7)
 plt.yticks(fontsize=7)
 plt.tight_layout()
-plot_centered(fig)
+plot_in_middle(fig)
 
 crime_counts = filtered_df['Crime_Type'].value_counts()
 fig, ax = plt.subplots(figsize=(3,2.5), dpi=150)
@@ -57,7 +58,7 @@ ax.set_title("Crime Type Distribution", fontsize=9)
 plt.xticks(rotation=45, fontsize=7)
 plt.yticks(fontsize=7)
 plt.tight_layout()
-plot_centered(fig)
+plot_in_middle(fig)
 
 victim_counts = filtered_df['Victim_Gender'].value_counts()
 suspect_counts = filtered_df['Suspect_Gender'].value_counts()
@@ -69,24 +70,19 @@ plt.xticks(rotation=0, fontsize=6)
 plt.yticks(fontsize=6)
 plt.ylim(0, max(df_gender.max())*1.1)
 plt.tight_layout()
-plot_centered(fig)
+plot_in_middle(fig)
 
 if 'Date' in df.columns:
     df['Date'] = pd.to_datetime(df['Date'], format='%d-%m-%Y', errors='coerce')
-    df_time_series = df.groupby('Date').size()
-    fig, ax = plt.subplots(figsize=(3,2.5), dpi=150)
-    ax.plot(df_time_series.index, df_time_series.values, marker='o', markersize=4, color=pastel_colors[2], linewidth=2)
-    ax.fill_between(df_time_series.index, df_time_series.values, alpha=0.2, color=pastel_colors[2])
-    ax.set_title("Crime Counts Over Time", fontsize=9)
-    ax.set_xlabel("Date", fontsize=7)
-    ax.set_ylabel("Number of Crimes", fontsize=7)
-    plt.xticks(rotation=45, fontsize=6)
-    plt.yticks(fontsize=6)
+    df['Year'] = df['Date'].dt.year
+    df['Month'] = df['Date'].dt.month
+    heat_data = df.groupby(['Month', 'Year']).size().unstack(fill_value=0)
+    fig, ax = plt.subplots(figsize=(4,3), dpi=150)
+    sns.heatmap(heat_data, annot=True, fmt="d", cmap="Pastel1", cbar_kws={'label': 'Crime Count'}, ax=ax)
+    ax.set_title("Crime Counts Heatmap (Month vs Year)", fontsize=9)
+    ax.set_xlabel("Year", fontsize=8)
+    ax.set_ylabel("Month", fontsize=8)
     plt.tight_layout()
-    plot_centered(fig)
-    st.markdown("<div style='text-align: center; font-size:12px;'>"
-                "The 'Crime Counts Over Time' graph shows how the number of crimes varies "
-                "over dates in the dataset. Peaks indicate days with higher crime incidents, "
-                "while dips show days with fewer crimes. This helps identify trends or spikes "
-                "in criminal activity over time."
-                "</div>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1,2,1])
+    with col2:
+        st.pyplot(fig, use_container_width=False)
